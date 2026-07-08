@@ -38,7 +38,7 @@
         }
 
         .container {
-            background: rgba(255, 255, 255, 0.85);
+            background: rgba(255, 255, 255, 0.75);
             backdrop-filter: blur(10px);
             border-radius: 24px;
             padding: 35px;
@@ -47,10 +47,22 @@
             box-shadow: 0 20px 40px rgba(0,0,0,0.1);
         }
 
+        .web-logo-wrapper {
+            text-align: center;
+            margin-bottom: 15px;
+        }
+        .web-logo {
+            width: 80px; 
+            height: auto;
+            border-radius: 16px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
         h2 {
             text-align: center;
             margin-top: 0;
             color: #312e81;
+            margin-bottom: 25px;
         }
 
         .drop-zone {
@@ -110,6 +122,7 @@
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
+            max-width: 100%;
         }
 
         .page-num {
@@ -155,20 +168,24 @@
 <body>
 
 <div class="container">
-    <h2> รวมหน้า PDF </h2>
+    <div class="web-logo-wrapper">
+        <img src="zone-bg.png" alt="Logo" class="web-logo">
+    </div>
+
+    <h2>✨ รวมและจัดลำดับหน้า PDF ✨</h2>
     
     <div class="drop-zone" id="drop-zone">
         <p style="margin:0; font-size: 28px;">📂</p>
         <p style="margin: 5px 0 0 0; font-weight: 500;">ลากไฟล์ PDF มาวางที่นี่</p>
-        <p style="margin: 3px 0 0 0; font-size: 12px; color: #6b7280;">เลือกสลับแทรกได้น้าา</p>
+        <p style="margin: 3px 0 0 0; font-size: 12px; color: #6b7280;">ระบบจะแยกออกเป็นหน้าๆ ให้เลือกสลับแทรกได้ทันที</p>
         <input type="file" id="file-input" multiple accept=".pdf" style="display: none;">
     </div>
 
-    <div style="font-size: 13px; font-weight: 600; color: #4338ca;">💡 สามารถลากสลับหน้า หรือกดกากบาทสีแดงเพื่อลบหน้าทิ้งได้เลย</div>
+    <div style="font-size: 13px; font-weight: 600; color: #4338ca;">💡 สามารถคลิกลากสลับหน้า หรือกดกากบาทสีแดงเพื่อลบหน้าทิ้งได้เลย</div>
     
     <div id="pages-container"></div>
 
-    <button class="btn-merge" id="merge-btn" disabled>⚡ รวมหน้าทั้งหมดตามลำดับนี้ทันที</button>
+    <button class="btn-merge" id="merge-btn" disabled>⚡ มัดรวมหน้าทั้งหมดตามลำดับนี้ ทันที</button>
 </div>
 
 <script>
@@ -260,7 +277,7 @@
 
     mergeBtn.addEventListener('click', async () => {
         mergeBtn.disabled = true;
-        mergeBtn.innerText = "ระบบกำลังจัดเรียงและรวมหน้าไฟล์...";
+        mergeBtn.innerText = "⏳ ระบบกำลังจัดเรียงและรวมหน้าไฟล์...";
 
         try {
             const finalDoc = await PDFLib.PDFDocument.create();
@@ -274,14 +291,14 @@
             const blob = new Blob([mergedBytes], { type: 'application/pdf' });
             const link = document.createElement('a');
             link.href = URL.createObjectURL(blob);
-            link.download = 'ensemble.pdf';
+            link.download = 'มัดรวมไฟล์สำเร็จ.pdf';
             link.click();
 
         } catch (error) {
             alert('เกิดข้อผิดพลาดในการรวมหน้าไฟล์: ' + error.message);
         } finally {
             mergeBtn.disabled = false;
-            mergeBtn.innerText = "รวมหน้าทั้งหมดทันที";
+            mergeBtn.innerText = "⚡ มัดรวมหน้าทั้งหมดตามลำดับนี้ ทันที";
         }
     });
 </script>
