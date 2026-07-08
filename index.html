@@ -152,12 +152,12 @@
 <body>
 
 <div class="container">
-    <h2>✨ รวมและจัดลำดับหน้า PDF ✨</h2>
+    <h2> รวมหน้า PDF </h2>
     
     <div class="drop-zone" id="drop-zone">
         <p style="margin:0; font-size: 28px;">📂</p>
         <p style="margin: 5px 0 0 0; font-weight: 500;">ลากไฟล์ PDF มาวางที่นี่</p>
-        <p style="margin: 3px 0 0 0; font-size: 12px; color: #6b7280;">ระบบจะแยกออกเป็นหน้าๆ ให้เลือกสลับแทรกได้ทันที</p>
+        <p style="margin: 3px 0 0 0; font-size: 12px; color: #6b7280;">เลือกสลับแทรกได้น้าา</p>
         <input type="file" id="file-input" multiple accept=".pdf" style="display: none;">
     </div>
 
@@ -165,7 +165,7 @@
     
     <div id="pages-container"></div>
 
-    <button class="btn-merge" id="merge-btn" disabled>⚡ มัดรวมหน้าทั้งหมดตามลำดับนี้ ทันที</button>
+    <button class="btn-merge" id="merge-btn" disabled>⚡ รวมหน้าทั้งหมดตามลำดับนี้ ทันที</button>
 </div>
 
 <script>
@@ -257,7 +257,7 @@
 
     mergeBtn.addEventListener('click', async () => {
         mergeBtn.disabled = true;
-        mergeBtn.innerText = "⏳ ระบบกำลังจัดเรียงและรวมหน้าไฟล์...";
+        mergeBtn.innerText = "ระบบกำลังจัดเรียงและรวมหน้าไฟล์...";
 
         try {
             const finalDoc = await PDFLib.PDFDocument.create();
@@ -271,14 +271,14 @@
             const blob = new Blob([mergedBytes], { type: 'application/pdf' });
             const link = document.createElement('a');
             link.href = URL.createObjectURL(blob);
-            link.download = 'มัดรวมไฟล์สำเร็จ.pdf';
+            link.download = 'ensemble.pdf';
             link.click();
 
         } catch (error) {
             alert('เกิดข้อผิดพลาดในการรวมหน้าไฟล์: ' + error.message);
         } finally {
             mergeBtn.disabled = false;
-            mergeBtn.innerText = "⚡ มัดรวมหน้าทั้งหมดตามลำดับนี้ ทันที";
+            mergeBtn.innerText = "มัดรวมหน้าทั้งหมดตามลำดับนี้ ทันที";
         }
     });
 </script>
