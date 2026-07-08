@@ -4,7 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>รวมไฟล์ PDF</title>
-    <link rel="icon" type="image/png" href="zone-bg.png">  ```
+    
+    <link rel="icon" type="image/png" href="zone-bg.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;600&display=swap" rel="stylesheet">
+    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
@@ -17,7 +22,7 @@
         }
 
         body {
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            font-family: 'Prompt', 'Segoe UI', system-ui, -apple-system, sans-serif;
             background: url('ensemble.jpg') no-repeat center center fixed;
             background-size: cover;
             color: var(--text);
@@ -35,7 +40,7 @@
             border-radius: 24px;
             padding: 35px;
             width: 100%;
-            max-width: 750px; /* ขยายให้กว้างขึ้นเพื่อโชว์หน้าย่อย */
+            max-width: 750px;
             box-shadow: 0 20px 40px rgba(0,0,0,0.1);
         }
 
@@ -61,7 +66,6 @@
         .drop-zone * { pointer-events: none; }
         .drop-zone:hover { background: rgba(255, 255, 255, 0.2) !important; }
 
-        /* โซนแสดงหน้าย่อยแบบตารางหมากรุก */
         #pages-container {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
@@ -110,7 +114,6 @@
             color: #6b7280;
         }
 
-        /* ปุ่มลบหน้าออกจากคิว */
         .btn-delete-page {
             position: absolute;
             top: -5px;
@@ -166,7 +169,6 @@
 </div>
 
 <script>
-    // ตั้งค่าตัวอ่านภาพนิ่ง PDF
     pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
 
     const dropZone = document.getElementById('drop-zone');
@@ -174,14 +176,11 @@
     const pagesContainer = document.getElementById('pages-container');
     const mergeBtn = document.getElementById('merge-btn');
     
-    // อาร์เรย์หลักเก็บสิทธิ์รายหน้าย่อย
     let allPagesInQueue = [];
 
-    // สั่งเปิดระบบ Sortable สามารถลากสลับตำแหน่งในกล่อง Grid ได้เลย
     const sortable = new Sortable(pagesContainer, {
         animation: 200,
         onEnd: function () {
-            // เมื่อจบลำดับการลากหน้าจอ ให้จัดลำดับในอาร์เรย์หลังบ้านใหม่ตามลำดับจริงใน Grid
             const currentIds = Array.from(pagesContainer.children).map(child => child.getAttribute('data-id'));
             allPagesInQueue = currentIds.map(id => allPagesInQueue.find(p => p.id === id));
         }
@@ -196,17 +195,12 @@
         handleFiles(e.dataTransfer.files);
     });
 
-    // ฟังก์ชันรับไฟล์ แล้วทำการ "ฉีก" PDF ออกมาเป็นหน้ารายบุคคล
     async function handleFiles(files) {
         for (let file of files) {
             if (file.type === "application/pdf") {
                 const arrayBuffer = await file.arrayBuffer();
-                
-                // โหลดโครงสร้างสำหรับจัดกลุ่มหน้าหลังบ้าน
                 const pdfLibDoc = await PDFLib.PDFDocument.load(arrayBuffer);
-                // โหลดโครงสร้างสำหรับทำภาพตัวอย่างหน้าบ้าน
                 const pdfJsDoc = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
-
                 const pageCount = pdfLibDoc.getPageCount();
 
                 for (let i = 0; i < pageCount; i++) {
@@ -220,8 +214,6 @@
                     };
                     
                     allPagesInQueue.push(pageData);
-                    
-                    // ปล่อยให้มันสร้างกรอบหน้าและเรนเดอร์ภาพตัวอย่างทันที
                     renderPageThumbnail(pdfJsDoc, i + 1, uniqueId, file.name);
                 }
             }
@@ -229,9 +221,7 @@
         mergeBtn.disabled = allPagesInQueue.length === 0;
     }
 
-    // ฟังก์ชันวาดภาพตัวอย่างของหน้านั้นๆ ลงบน Canvas
     async function renderPageThumbnail(pdfJsDoc, pageNumber, uniqueId, fileName) {
-        // สร้างบล็อกของหน้านั้นรอไว้ก่อนเพื่อความเร็ว
         const card = document.createElement('div');
         card.className = 'page-card';
         card.setAttribute('data-id', uniqueId);
@@ -239,13 +229,13 @@
             <button class="btn-delete-page" onclick="removeSpecificPage('${uniqueId}')">✕</button>
             <canvas id="canvas_${uniqueId}"></canvas>
             <div class="page-info" title="${fileName}">${fileName}</div>
-            <div class="page-num">หน้าถัดไปที่ ${pageNumber}</div>
+            <div class="page-num">หน้าย่อยที่ ${pageNumber}</div>
         `;
         pagesContainer.appendChild(card);
 
         try {
             const page = await pdfJsDoc.getPage(pageNumber);
-            const viewport = page.getViewport({ scale: 0.3 }); // ย่อขนาดภาพไม่ให้หนักเครื่อง
+            const viewport = page.getViewport({ scale: 0.3 });
             const canvas = document.getElementById(`canvas_${uniqueId}`);
             if(!canvas) return;
             const context = canvas.getContext('2d');
@@ -254,11 +244,10 @@
 
             await page.render({ canvasContext: context, viewport: viewport }).promise;
         } catch (err) {
-            console.error("ผิดพลาดขณะเรนเดอร์หน้าภาพนิ่ง:", err);
+            console.error("Error rendering thumbnail:", err);
         }
     }
 
-    // ฟังก์ชันสั่งลบเฉพาะหน้างานชิ้นใดชิ้นหนึ่งออกจากการรวม
     window.removeSpecificPage = function(id) {
         allPagesInQueue = allPagesInQueue.filter(p => p.id !== id);
         const card = pagesContainer.querySelector(`[data-id="${id}"]`);
@@ -266,16 +255,14 @@
         mergeBtn.disabled = allPagesInQueue.length === 0;
     }
 
-    // 🚀 ระบบประมวลผลดึงแผ่นย่อยมารวมเป็นไฟล์ใหม่ตามใจสั่ง
     mergeBtn.addEventListener('click', async () => {
         mergeBtn.disabled = true;
-        mergeBtn.innerText = "⏳ ระบบกำลังเก็บและแทรกหน้าย่อยตามใจสั่ง...";
+        mergeBtn.innerText = "⏳ ระบบกำลังจัดเรียงและรวมหน้าไฟล์...";
 
         try {
             const finalDoc = await PDFLib.PDFDocument.create();
 
             for (let pageItem of allPagesInQueue) {
-                // ดึงเฉพาะเลขหน้าที่ระบุจากเอกสารต้นฉบับดั้งเดิมมาร้อยเรียงใหม่
                 const copiedPages = await finalDoc.copyPages(pageItem.pdfLibDoc, [pageItem.pageIndex]);
                 finalDoc.addPage(copiedPages[0]);
             }
@@ -284,11 +271,11 @@
             const blob = new Blob([mergedBytes], { type: 'application/pdf' });
             const link = document.createElement('a');
             link.href = URL.createObjectURL(blob);
-            link.download = 'ใบลงชื่อแบบแทรกสลับหน้าสำเร็จ.pdf';
+            link.download = 'มัดรวมไฟล์สำเร็จ.pdf';
             link.click();
 
         } catch (error) {
-            alert('เกิดข้อผิดพลาดในการร้อยหน้าไฟล์: ' + error.message);
+            alert('เกิดข้อผิดพลาดในการรวมหน้าไฟล์: ' + error.message);
         } finally {
             mergeBtn.disabled = false;
             mergeBtn.innerText = "⚡ มัดรวมหน้าทั้งหมดตามลำดับนี้ ทันที";
