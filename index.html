@@ -182,11 +182,11 @@
         <input type="file" id="file-input" multiple accept=".pdf" style="display: none;">
     </div>
 
-    <div style="font-size: 13px; font-weight: 600; color: #4338ca;">💡 สามารถคลิกลากสลับหน้า หรือกดกากบาทสีแดงเพื่อลบหน้าทิ้งได้เลย</div>
+    <div style="font-size: 13px; font-weight: 600; color: #4338ca;">💡 สามารถลากสลับหน้าหรือกดกากบาทสีแดงเพื่อลบหน้าทิ้งได้เลย</div>
     
     <div id="pages-container"></div>
 
-    <button class="btn-merge" id="merge-btn" disabled>⚡ มัดรวมหน้าทั้งหมดตามลำดับนี้ ทันที</button>
+    <button class="btn-merge" id="merge-btn" disabled> รวมหน้าทั้งหมดตามลำดับนี้ </button>
 </div>
 
 <script>
@@ -278,7 +278,7 @@
 
     mergeBtn.addEventListener('click', async () => {
         mergeBtn.disabled = true;
-        mergeBtn.innerText = "⏳ ระบบกำลังจัดเรียงและรวมหน้าไฟล์...";
+        mergeBtn.innerText = "⏳ ระบบกำลังจัดเรียงและรวมไฟล์...";
 
         try {
             const finalDoc = await PDFLib.PDFDocument.create();
@@ -299,7 +299,7 @@
             alert('เกิดข้อผิดพลาดในการรวมหน้าไฟล์: ' + error.message);
         } finally {
             mergeBtn.disabled = false;
-            mergeBtn.innerText = "⚡ มัดรวมหน้าทั้งหมดตามลำดับนี้ ทันที";
+            mergeBtn.innerText = "รวมหน้าทั้งหมดตามลำดับนี้ทันที";
         }
     });
 </script>
